@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres:14
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+              # 원래 위까지만 해도 되는데, postgres는 아래 1개 추가해야 함.
+              # persistent volume 내에 postgres 폴더를 만들도록 함.
+              subPath: postgres
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              # kubectl create secret generic pgpassword --from-literal POSTGRES_PASSWORD=1234 로 했을 경우
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: pgpassword
+              #     key: POSTGRES_PASSWORD
+              value: "1234"
+            - name: POSTGRES_DB
+              value: postgres

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: worker
+  template:
+    metadata:
+      labels:
+        component: worker
+    spec:
+      containers:
+        - name: worker
+          image: kwangdock/docker-fibonacci-complex-worker
+          imagePullPolicy: Always
+          env:
+            - name: REDIS_URL
+              # host 는 ClusterIP Service 의 name
+              value: redis://redis-service

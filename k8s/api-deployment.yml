@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      containers:
+        - name: api
+          image: kwangdock/docker-fibonacci-complex-api
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: REDIS_URL
+              # host 는 ClusterIP Service 의 name
+              value: redis://redis-service
+            - name: PSQL_URL
+              # host 는 ClusterIP Service 의 name
+              value: postgresql://postgres:1234@postgres-service:5432/postgres
+              # kubectl create secret generic pgurl --from-literal PSQL_URL=postgresql://postgres:1234@postgres-service:5432/postgres 로 했을 경우
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: pgurl
+              #     key: PSQL_URL

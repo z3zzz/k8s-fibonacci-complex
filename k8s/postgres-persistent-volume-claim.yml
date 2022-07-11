@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-persistent-volume-claim
+spec:
+  accessModes:
+    # ReadWriteOnce - 1개 node 에서만 사용 가능
+    # ReadOnlyMany - 여러 node 에서 가능
+    # ReadWriteMany - 여러 node 에서 가능
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
