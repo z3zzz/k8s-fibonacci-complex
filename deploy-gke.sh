@@ -1,7 +1,7 @@
 curl https://sdk.cloud.google.com > install.sh;
 bash install.sh --disable-prompts;
 
-gcloud components update kubectl;
+gcloud components install kubectl --quiet;
 gcloud auth activate-service-account --key-file service-account.json;
 gcloud config set project kube8-practice;
 gcloud config set compute/zone asia-northeast3-a;
