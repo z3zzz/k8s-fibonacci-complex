@@ -12,3 +12,6 @@ kubectl rollout restart deployment api-deployment;
 kubectl rollout restart deployment web-deployment; 
 kubectl rollout restart deployment worker-deployment; 
 
+##SHA 들어간 이미지를 사용할 경우
+#kubectl set image deployments/api-deployment api=kwangdock/docker-fibonacci-complex:$SHA
+
