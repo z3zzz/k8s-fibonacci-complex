@@ -1,5 +1,5 @@
-curl https://sdk.cloud.google.com | bash > /dev/null;
-source $HOME/google-cloud-sdk/path.bash.inc;
+curl https://sdk.cloud.google.com > install.sh;
+bash install.sh --disable-prompts;
 
 gcloud components update kubectl;
 gcloud auth activate-service-account --key-file service-account.json;
