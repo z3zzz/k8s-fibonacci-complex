@@ -1,34 +1,37 @@
 sudo: required
 language: generic
-
 services:
-  - docker
-  - postgresql
-  - redis-server
-
-before_install: 
-  - psql -c 'CREATE TABLE IF NOT EXISTS values (number INTEGER);' -U postgres
-  - psql -c "ALTER USER postgres PASSWORD '1234';" -U postgres
-  - redis-cli HSET values 5 8
-  - docker pull kwangdock/docker-fibonacci-complex-api-dev 
-  - docker pull kwangdock/docker-fibonacci-complex-web-dev 
-
+- docker
+- postgresql
+- redis-server
+before_install:
+- openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv
+  -in service-account.json.enc -out service-account.json -d
+- psql -c 'CREATE TABLE IF NOT EXISTS values (number INTEGER);' -U postgres
+- psql -c "ALTER USER postgres PASSWORD '1234';" -U postgres
+- redis-cli HSET values 5 8
+- curl https://sdk.cloud.google.com | bash > /dev/null
+- source $HOME/google-cloud-sdk/path.bash.inc
+- gcloud components update kubectl
+- gcloud auth activate-service-account --key-file service-account.json
+- docker pull kwangdock/docker-fibonacci-complex-api-dev
+- docker pull kwangdock/docker-fibonacci-complex-web-dev
 script:
-  - docker run --network=host -t -v /app/node_modules -v $(pwd)/api:/app kwangdock/docker-fibonacci-complex-api-dev npm run test &&
-    docker run -e CI=true -t -v /app/node_modules -v $(pwd)/web:/app kwangdock/docker-fibonacci-complex-web-dev npm run test
-
+- docker run --network=host -t -v /app/node_modules -v $(pwd)/api:/app kwangdock/docker-fibonacci-complex-api-dev
+  npm run test && docker run -e CI=true -t -v /app/node_modules -v $(pwd)/web:/app
+  kwangdock/docker-fibonacci-complex-web-dev npm run test
 deploy:
-  - provider: script
-    on:
-      branch: main
-    script: bash docker-push.sh
-  - provider: elasticbeanstalk
-    on:
-      branch: main-but-currently-EBS-is-not-usable
-    region: "ap-northeast-2"
-    app: "docker-fibonacci-complex2"
-    env: "Dockerfibonaccicomplex2-env"
-    bucket_name: "elasticbeanstalk-ap-northeast-2-804508095163"
-    bucket_path: "fibonacci"
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_KEY
+- provider: script
+  on:
+    branch: main
+  script: bash docker-push.sh
+- provider: elasticbeanstalk
+  on:
+    branch: main-but-currently-EBS-is-not-usable
+  region: ap-northeast-2
+  app: docker-fibonacci-complex2
+  env: Dockerfibonaccicomplex2-env
+  bucket_name: elasticbeanstalk-ap-northeast-2-804508095163
+  bucket_path: fibonacci
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
