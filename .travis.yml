@@ -11,8 +11,6 @@ env:
     # tell google cloud sdk to not use any prompt
     - CLOUD_SDK_CORE_DISABLE_PROMPTS=1
 before_install:
-  # decrypt service-account.json for google cloud sdk
-  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
   # prepare database for test
   - psql -c 'CREATE TABLE IF NOT EXISTS values (number INTEGER);' -U postgres
   - psql -c "ALTER USER postgres PASSWORD '1234';" -U postgres
